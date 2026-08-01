@@ -15,3 +15,6 @@ npm-debug.log*
 # Scratch conversions from the slide build (soffice output)
 s.pdf
 m.pdf
+
+# Lockfiles are not part of the teaching material
+package-lock.json

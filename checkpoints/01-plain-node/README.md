@@ -48,9 +48,6 @@ export DB_NAME=nsu_demo
 npm start
 ```
 
-Open <http://localhost:3000>. (`localhost` = this computer. `3000` = the port the app
-is listening on.)
-
 ## What you should see
 
 A page that says **This page was answered by** followed by your laptop's name, an empty

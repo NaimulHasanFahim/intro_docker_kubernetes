@@ -18,6 +18,7 @@ COPY . .
 # 5. Documentation for humans + tooling. Does NOT publish the port by itself.
 EXPOSE 3000
 ENV PORT=3000
+ENV CHECKPOINT=3
 
 # 6. Do not run as root. Free security win, one line.
 USER node

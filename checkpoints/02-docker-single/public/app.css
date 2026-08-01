@@ -29,8 +29,31 @@ body {
   background: var(--ink); color: var(--cream);
 }
 
-.brand { font-family: var(--mono); text-transform: uppercase; letter-spacing: .18em; font-size: .85rem; }
+.brand {
+  font-family: var(--mono); text-transform: uppercase; letter-spacing: .18em;
+  font-size: .85rem; color: inherit; text-decoration: none;
+}
 .brand span { opacity: .65; }
+
+/* Which checkpoint am I looking at? The app answers that itself. */
+.checkpoint {
+  display: flex; flex-direction: column; line-height: 1.25;
+  border-left: 1px solid rgba(246, 243, 231, .3); padding-left: .9rem;
+}
+.checkpoint b { font-size: .82rem; font-weight: 600; }
+.checkpoint span {
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; opacity: .7;
+}
+
+.tabs { display: flex; gap: .3rem; margin-right: auto; }
+.tabs a {
+  color: inherit; text-decoration: none; border-radius: 999px;
+  padding: .28rem .85rem; font-size: .85rem;
+  border: 1px solid transparent;
+}
+.tabs a:hover { border-color: rgba(246, 243, 231, .4); }
+.tabs a.active { background: var(--cream); color: var(--ink); font-weight: 600; }
 
 .topbar-right { display: flex; align-items: center; gap: .85rem; }
 
@@ -60,6 +83,19 @@ body {
 /* ---------- layout ---------- */
 
 main { max-width: 1180px; margin: 1.5rem auto; padding: 0 1.25rem; }
+main.narrow { max-width: 680px; display: grid; gap: 1.1rem; }
+
+/* The one link off the beginner page. */
+.next-page {
+  display: block; color: inherit; text-decoration: none;
+  border-style: dashed; transition: border-color .15s, background .15s;
+}
+.next-page:hover { background: var(--code); border-color: var(--accent); }
+.next-page b { display: block; margin-bottom: .25rem; }
+.next-page span { font-size: .88rem; color: var(--accent); }
+
+.counter { margin: .9rem 0 0; font-size: .84rem; color: var(--sage); }
+.counter b { font-family: var(--mono); font-size: 1.1rem; color: var(--ink); }
 
 /* Cards sit on the same cream as the deck background -- the page and the slides
    behind it should read as one thing. Only a sage rule separates them. */

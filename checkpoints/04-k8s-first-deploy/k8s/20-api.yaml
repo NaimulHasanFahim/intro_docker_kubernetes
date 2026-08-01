@@ -23,6 +23,8 @@ spec:
           env:
             - name: APP_VERSION
               value: v1
+            - name: CHECKPOINT   # overrides the value baked into the image
+              value: "4"
             - name: DB_HOST
               value: postgres    # the Service name from 10-postgres.yaml
             - name: DB_PORT

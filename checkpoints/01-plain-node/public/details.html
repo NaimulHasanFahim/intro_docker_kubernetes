@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Under the hood — NSU Container Demo</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body data-page="details">
+
+<header class="topbar">
+  <a class="brand" href="/">NSU <span>Container Demo</span></a>
+  <span class="checkpoint" id="checkpoint-chip">…</span>
+  <nav class="tabs">
+    <a href="/">Guestbook</a>
+    <a href="/details" class="active">Under the hood</a>
+  </nav>
+  <div class="topbar-right">
+    <span class="badge" id="version-badge" title="Which version of the app answered">…</span>
+    <span class="pill" id="health-pill"><i class="dot"></i><span id="health-text">connecting</span></span>
+    <label class="switch" title="Re-check every 1.5 seconds">
+      <input type="checkbox" id="live-toggle" checked>
+      <span>Live <small id="live-tick">·</small></span>
+    </label>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero card" id="hero">
+    <p class="hero-label">Right now, answering you</p>
+    <p class="hero-pod" id="pod-name">…</p>
+    <div class="hero-meta">
+      <div><b id="meta-uptime">—</b><span>this copy has been running</span></div>
+      <div><b id="meta-requests">0</b><span>requests you have sent</span></div>
+      <div><b id="meta-pods">0</b><span>different copies that replied</span></div>
+      <div><b id="meta-visits">—</b><span>names saved in the database</span></div>
+    </div>
+  </section>
+
+  <div class="grid">
+
+    <!-- Scaling demo: leave Live on and watch the bars spread out. -->
+    <section class="card">
+      <h2>Who answered <small>one bar per copy</small></h2>
+      <p class="hint">Every reply is counted here. Start more copies of the app and the
+        bars split between them — that is load balancing, and nobody configured it.</p>
+      <ul class="pods" id="pod-list"><li class="empty">waiting for the first reply…</li></ul>
+      <div class="row">
+        <button class="ghost" id="ping-btn">Send 10 requests</button>
+        <button class="ghost" id="reset-pods">Reset counters</button>
+      </div>
+    </section>
+
+    <!-- Rolling-update demo: the log shows v1 and v2 interleaved, then only v2. -->
+    <section class="card">
+      <h2>Request log <small>newest first</small></h2>
+      <p class="hint">One line per reply: the time, the app version, and which copy
+        answered. During an update you will see two versions here at once.</p>
+      <ul class="log" id="log"><li class="empty">nothing yet</li></ul>
+    </section>
+
+    <!-- ConfigMap and Secret, as the process actually sees them. -->
+    <section class="card">
+      <h2>Settings this copy was given <small>environment variables</small></h2>
+      <p class="hint">Nothing here is written in the code — the app reads all of it from
+        its environment, which is how the same image runs in dev and in production.</p>
+      <table class="config"><tbody id="config-body"></tbody></table>
+      <div class="row">
+        <button class="ghost" id="reveal-secret">Reveal the password</button>
+        <span class="hint inline">A Kubernetes Secret is only encoded, not encrypted —
+          the app can read it, and so can anyone who gets inside.</span>
+      </div>
+    </section>
+
+    <!-- Probes and self-healing, on a button. -->
+    <section class="card chaos">
+      <h2>Break this copy <small>on purpose</small></h2>
+      <p class="hint">Safe to click. This only affects the copy that receives the click.</p>
+      <div class="chaos-item">
+        <div>
+          <b>Make it report itself as sick</b>
+          <span class="hint">Its health check starts failing. Kubernetes stops sending it
+            traffic, then restarts it and it comes back fine. Plain Docker does nothing —
+            nobody is checking.</span>
+        </div>
+        <label class="switch"><input type="checkbox" id="fail-health"><span>Sick</span></label>
+      </div>
+      <div class="chaos-item">
+        <div>
+          <b>Crash it</b>
+          <span class="hint">The app stops instantly, like a real crash. Kubernetes starts
+            a replacement in seconds. A lone container just stays dead until you notice.</span>
+        </div>
+        <button class="ghost danger" id="crash-btn">Crash it</button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <span>The addresses behind these pages, if you want to try them with <code>curl</code>:</span>
+  <code>GET /api/status</code> · <code>GET | POST | DELETE /api/visits</code> ·
+  <code>GET /healthz</code> · <code>POST /api/chaos/health</code> ·
+  <code>POST /api/chaos/crash</code>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

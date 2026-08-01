@@ -31,6 +31,7 @@ sudo -u postgres psql -c "CREATE USER nsu WITH PASSWORD 'nsu_password';"
 sudo -u postgres psql -c "CREATE DATABASE nsu_demo OWNER nsu;"
 
 # 4. Tell the app where the database is
+export CHECKPOINT=1          # just labels the navbar
 export DB_HOST=localhost
 export DB_PORT=5432
 export DB_USER=nsu

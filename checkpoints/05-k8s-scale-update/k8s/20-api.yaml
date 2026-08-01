@@ -27,6 +27,8 @@ spec:
           env:
             - name: APP_VERSION
               value: v1
+            - name: CHECKPOINT   # overrides the value baked into the image
+              value: "5"
           envFrom:             # pull in every key from these two objects at once
             - configMapRef:
                 name: app-config

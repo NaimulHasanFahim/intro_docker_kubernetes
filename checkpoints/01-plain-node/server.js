@@ -1,4 +1,5 @@
 const express = require("express");
+const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { Pool } = require("pg");
@@ -6,6 +7,23 @@ const { Pool } = require("pg");
 const PORT = Number(process.env.PORT || 3000);
 const VERSION = process.env.APP_VERSION || "v1";
 const STARTED_AT = Date.now();
+
+// Which checkpoint is this? Set by the Dockerfile, Compose file or k8s manifest that
+// started us. The navbar prints it so nobody in the room loses their place.
+const CHECKPOINT_NAMES = {
+  1: "Checkpoint 1 · plain Node, no Docker",
+  2: "Checkpoint 2 · one container",
+  3: "Checkpoint 3 · Compose + Postgres",
+  4: "Checkpoint 4 · first Kubernetes deploy",
+  5: "Checkpoint 5 · scale, heal, update",
+};
+
+// The app can also work out where it is running, with no configuration at all.
+function detectRuntime() {
+  if (process.env.KUBERNETES_SERVICE_HOST) return "in a Kubernetes pod";
+  if (fs.existsSync("/.dockerenv")) return "in a Docker container";
+  return "straight on the machine";
+}
 
 // Flipped from the "Break this pod" panel in the UI. When true /healthz answers 500,
 // which is exactly what a failing liveness/readiness probe looks like to Kubernetes.
@@ -50,9 +68,9 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// The whole UI is three static files. No build step, no CDN -- a lecture hall
-// never has the wifi you were promised.
-app.use(express.static(path.join(__dirname, "public")));
+// The whole UI is a handful of static files. No build step, no CDN -- a lecture hall
+// never has the wifi you were promised. `extensions` lets /details serve details.html.
+app.use(express.static(path.join(__dirname, "public"), { extensions: ["html"] }));
 
 // Liveness/readiness target. Kubernetes will call this constantly.
 app.get("/healthz", async (_req, res) => {
@@ -87,6 +105,11 @@ app.get("/api/status", async (_req, res) => {
   res.json({
     pod: os.hostname(),
     version: VERSION,
+    checkpoint: {
+      label: CHECKPOINT_NAMES[process.env.CHECKPOINT] || null,
+      runtime: detectRuntime(),
+      hint: "Set with the CHECKPOINT environment variable; the runtime is detected.",
+    },
     healthy: !failHealth,
     uptimeSeconds: Math.round((Date.now() - STARTED_AT) / 1000),
     servedAt: new Date().toISOString(),
@@ -94,6 +117,7 @@ app.get("/api/status", async (_req, res) => {
     totalVisits,
     config: {
       APP_VERSION: VERSION,
+      CHECKPOINT: process.env.CHECKPOINT || "(not set)",
       PORT: String(PORT),
       DB_HOST: DB.host,
       DB_PORT: String(DB.port),

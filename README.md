@@ -106,33 +106,13 @@ only for Checkpoint 1. A third of the room will not have done it — plan for pa
 
 ---
 
-## Session outline (90 minutes)
-
-| Time | Block |
-|---|---|
-| 0:00–0:05 | Framing: what this session is, the two questions, ground rules |
-| 0:05–0:20 | **Part 1** — why containers exist (VMs, the insight, the comparison) |
-| 0:20–0:32 | **Part 2** — what a container actually is (namespaces, cgroups, layers) |
-| 0:32–0:36 | **CP1 + CP2 demo** — the old way fails, the image works |
-| 0:36–0:55 | **Part 3** — Docker concepts (images, Dockerfile, caching, networking, volumes) |
-| 0:55–0:58 | **CP3 demo** — Compose, and the volume lesson |
-| 0:58–1:02 | Where Docker stops → what orchestration means |
-| 1:02–1:20 | **Part 4** — Kubernetes (control loop, architecture, Pod/Deployment/Service, config, probes) |
-| 1:20–1:26 | **CP4 + CP5 demo** — deploy, scale, self-heal, rolling update |
-| 1:26–1:30 | Five things to remember · where to go next · Q&A |
-
-**Run the checkpoints as demos, not as a type-along.** You cannot fit this much theory
-and five hands-on labs into 90 minutes. Project your screen and point them at the repo
-to redo it at home. If you have 3 hours, let the room type along at every checkpoint.
-
-**Running behind?** Skip the non-core slides. **Never cut:** the layer-cache slide,
-`localhost`-inside-a-container, stateless vs stateful, the control loop, labels and
-selectors, and CP5. Those six carry the session.
-
----
-
 ## Teaching notes that matter
 
+- **Run the checkpoints as demos, not as a type-along.** You cannot fit this much
+  theory and five hands-on labs into 90 minutes. Project your screen and point them at
+  the repo to redo it at home. With 3 hours, let the room type along at every one.
+- **Never cut** the layer-cache slide, `localhost`-inside-a-container, stateless vs
+  stateful, the control loop, labels and selectors, or CP5. Those six carry the session.
 - **Define every word the first time you say it.** Server, deploy, environment,
   dependency, kernel, daemon. A student who loses the vocabulary in minute six is lost
   for the remaining eighty-four and will not tell you.

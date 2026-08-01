@@ -1,0 +1,17 @@
+# JetBrains IDE — local project state
+.idea/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Local env
+.env
+.env.*
+
+# OS
+.DS_Store
+
+# Scratch conversions from the slide build (soffice output)
+s.pdf
+m.pdf

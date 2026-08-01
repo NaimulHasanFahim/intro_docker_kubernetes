@@ -1,0 +1,50 @@
+# Postgres, the naive version. Good enough to learn on, wrong for production
+# (the password is in plain text and the data dies with the pod).
+# Checkpoint 5 fixes both.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: nsu-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres          # "manage every pod carrying this label"
+  template:                  # <-- everything below is the POD template
+    metadata:
+      labels:
+        app: postgres        # must match the selector above, or nothing works
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: nsu
+            - name: POSTGRES_PASSWORD
+              value: nsu_password
+            - name: POSTGRES_DB
+              value: nsu_demo
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          emptyDir: {}       # temporary disk. Dies with the pod. On purpose, for now.
+---
+# A Service is a stable name + stable IP in front of pods that come and go.
+# The api will connect to the hostname "postgres" and Kubernetes DNS resolves it.
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: nsu-demo
+spec:
+  selector:
+    app: postgres            # send traffic to any pod with this label
+  ports:
+    - port: 5432
+      targetPort: 5432

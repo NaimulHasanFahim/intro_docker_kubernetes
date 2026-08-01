@@ -1,0 +1,5 @@
+# A namespace is a folder for your objects. Keeps the demo out of everyone else's way.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nsu-demo

@@ -1,0 +1,37 @@
+# Two containers, one network, one command.
+# Compose gives every service a DNS name equal to its service name:
+# the api reaches Postgres at the hostname "db". No IP addresses anywhere.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nsu
+      POSTGRES_PASSWORD: nsu_password
+      POSTGRES_DB: nsu_demo
+    volumes:
+      # Named volume. Lives OUTSIDE the container, survives `docker compose down`.
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nsu -d nsu_demo"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    ports:
+      - "8080:3000"
+    environment:
+      APP_VERSION: v1
+      DB_HOST: db          # <-- the service name above, resolved by Docker's DNS
+      DB_PORT: "5432"
+      DB_USER: nsu
+      DB_PASSWORD: nsu_password
+      DB_NAME: nsu_demo
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

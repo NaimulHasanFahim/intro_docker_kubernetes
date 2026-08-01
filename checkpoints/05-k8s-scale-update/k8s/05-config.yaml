@@ -1,0 +1,26 @@
+# Config that is boring -> ConfigMap.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: nsu-demo
+data:
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_NAME: nsu_demo
+  DB_USER: nsu
+---
+# Config that would get you fired -> Secret.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+  namespace: nsu-demo
+type: Opaque
+stringData:                     # stringData lets you write plain text; k8s base64s it for you
+  DB_PASSWORD: nsu_password
+  POSTGRES_PASSWORD: nsu_password
+# HONESTY SLIDE: a Secret is base64, not encryption. Prove it live:
+#   kubectl get secret db-secret -n nsu-demo -o jsonpath='{.data.DB_PASSWORD}' | base64 -d
+# Real protection needs encryption-at-rest + RBAC, or an external vault.
+# The win here is separation: the same image ships to dev and prod, only the Secret differs.

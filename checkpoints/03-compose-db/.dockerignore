@@ -1,0 +1,9 @@
+# Anything listed here never enters the build context.
+# Keeps images small and stops you baking secrets into a layer forever.
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+k8s
+README.md

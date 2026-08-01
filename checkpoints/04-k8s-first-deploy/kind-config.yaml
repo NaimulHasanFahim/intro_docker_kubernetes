@@ -1,0 +1,16 @@
+# A whole Kubernetes cluster, running as Docker containers on your laptop.
+# "kind" = Kubernetes IN Docker. Yes, we are running Kubernetes inside Docker
+# to learn Kubernetes, which is running Docker. Enjoy that for a second.
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: nsu
+nodes:
+  - role: control-plane
+    # Forward laptop:8080 -> cluster NodePort 30080 so the browser can reach the app.
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 8080
+        protocol: TCP
+  - role: worker
+  - role: worker

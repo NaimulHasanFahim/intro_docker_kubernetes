@@ -4,7 +4,7 @@ Everything needed to run an introductory Docker + Kubernetes session for univers
 students who can code but have never touched ops.
 
 ```
-nsu_session/
+intro_docker_kubernetes/
 ├── README.md                  ← you are here (instructor guide)
 ├── CHEATSHEET.md              ← one-page handout for attendees
 ├── slides/

@@ -7,38 +7,24 @@ it directly in PowerPoint, Keynote or LibreOffice. Speaker notes are included.
 |---|---|
 | `docker-k8s-intro.pptx` | 62 slides — the full deck |
 | `docker-k8s-intro-lean.pptx` | 46 slides — the cut for a tight 90 minutes |
-| `content.py` | All slide content — the single source of truth |
-| `build_pptx.py` | Renders `content.py` into both decks and `deck.md` |
-| `deck.md` / `deck-lean.md` | Marp markdown, generated — do not hand-edit |
+| `docker-k8s-intro-final.pptx` | an earlier export, kept as a spare |
+| `deck.md` / `deck-lean.md` | the same two decks in [Marp](https://marp.app) markdown |
 
-## Rebuilding
+## The markdown decks
+
+Preview them with the *Marp for VS Code* extension, or export:
 
 ```bash
-python3 build_pptx.py          # 62 slides -> docker-k8s-intro.pptx + deck.md
-python3 build_pptx.py --lean   # 46 slides -> *-lean.pptx + deck-lean.md
+npx @marp-team/marp-cli deck.md -o deck.html
+npx @marp-team/marp-cli deck.md --pdf
 ```
 
-Pure standard library — no `pip install`, no Node.
+They render in Marp's default theme. `<!-- _class: lead -->` still gives the divider and
+joke slides their inverted look; the `emoji` and `kicker` spans are plain text unless you
+add CSS for them in the front matter.
 
 ## Editing
 
-Edit `content.py`, never the `.pptx` or the `.md`. Each slide is a dict:
-
-```python
-{"title": "...", "lead": "...", "bullets": [...], "code": "...",
- "diagram": {...}, "table": [[...], ...], "footnote": "...",
- "notes": "...", "core": True}
-```
-
-`{"type": "section"}` makes a divider. `{"type": "gag", "emoji": "🐳", "punchline": "..."}`
-makes a joke slide — the gags sit right after the heaviest concepts on purpose, each
-restating the idea in plain language for anyone who drifted. `"lean": False` drops a
-slide from the lean build.
-
-The palette (cream `#F6F3E7`, forest `#1D3A1C`, sage `#7F9169`) is six constants at the
-top of `build_pptx.py`. The demo app's UI uses the same values, so changing them reskins
-both together.
-
-> The `.pptx` files were validated structurally but never opened in a renderer —
-> LibreOffice on the build machine cannot load any file. Open one yourself before the
-> session.
+Edit these files directly — the generator that produced them is no longer in the repo,
+so the `.pptx` files and the markdown decks are now separate copies. A change to one does
+not reach the other.

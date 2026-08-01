@@ -8,18 +8,18 @@ it directly in PowerPoint, Keynote or LibreOffice. Speaker notes are included.
 | `docker-k8s-intro.pptx` | 62 slides — the full deck |
 | `docker-k8s-intro-lean.pptx` | 46 slides — the cut for a tight 90 minutes |
 | `docker-k8s-intro-final.pptx` | an earlier export, kept as a spare |
-| `deck.md` / `deck-lean.md` | the same two decks in [Marp](https://marp.app) markdown |
+| `deck.md` | the full deck in [Marp](https://marp.app) markdown |
 
-## The markdown decks
+## The markdown deck
 
-Preview them with the *Marp for VS Code* extension, or export:
+Preview it with the *Marp for VS Code* extension, or export:
 
 ```bash
 npx @marp-team/marp-cli deck.md -o deck.html
 npx @marp-team/marp-cli deck.md --pdf
 ```
 
-They render in Marp's default theme. `<!-- _class: lead -->` still gives the divider and
+It renders in Marp's default theme. `<!-- _class: lead -->` still gives the divider and
 joke slides their inverted look; the `emoji` and `kicker` spans are plain text unless you
 add CSS for them in the front matter.
 

@@ -26,5 +26,5 @@ add CSS for them in the front matter.
 ## Editing
 
 Edit these files directly — the generator that produced them is no longer in the repo,
-so the `.pptx` files and the markdown decks are now separate copies. A change to one does
-not reach the other.
+so the `.pptx` files and `deck.md` are now separate copies. A change to one does not
+reach the other.

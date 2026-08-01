@@ -89,7 +89,13 @@ app.get("/healthz", async (_req, res) => {
 
 // One call powers the whole dashboard: who served you, which version, is the DB up,
 // and what config this replica was handed.
+//
+// `Connection: close` is the important line. A Kubernetes Service load-balances per TCP
+// CONNECTION, not per request, and browsers keep one connection alive for minutes -- so
+// without this every poll comes back from the same pod and the whole scaling demo looks
+// broken. Closing the connection forces the next poll to be balanced again.
 app.get("/api/status", async (_req, res) => {
+  res.set("Connection", "close");
   const startedQuery = Date.now();
   let db = { ok: false, latencyMs: null, error: null };
   let totalVisits = null;
@@ -135,6 +141,7 @@ app.get("/api/config/secret", (_req, res) => {
 });
 
 app.get("/api/visits", async (_req, res) => {
+  res.set("Connection", "close");   // same reason as /api/status
   const { rows } = await pool.query(
     "SELECT id, name, served_by, created_at FROM visits ORDER BY id DESC LIMIT 10"
   );

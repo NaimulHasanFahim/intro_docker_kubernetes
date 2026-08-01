@@ -143,6 +143,7 @@ selector: { app: api }      # ← and match here too
 | Service returns nothing | Labels do not match → `kubectl get endpoints <svc>` |
 | `ECONNREFUSED 127.0.0.1` | `localhost` inside a container is the container. Use the service name |
 | Works in Compose, not K8s | Env vars — check the ConfigMap/Secret is actually mounted |
+| Pod name never changes in the browser | HTTP keep-alive. A Service balances per connection, not per request — send `Connection: close` or test with `curl` |
 
 **`kubectl describe pod <name>` and read the Events at the bottom.** That is the answer
 to most questions you will have this week.

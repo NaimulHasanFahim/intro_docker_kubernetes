@@ -25,6 +25,12 @@ Watch the browser. **The name under "This page was answered by" keeps changing**
 requests are being spread across 5 pods by the Service. Nobody configured a load
 balancer; you asked for 5 copies and got one address that reaches all of them.
 
+> **Why the name changes at all.** A Service balances per TCP *connection*, and a
+> browser keeps one connection open for minutes. So the app answers `/api/status` with
+> `Connection: close`, forcing every poll to open a fresh connection and be balanced
+> again. Without that one line the page sits on a single pod and the demo looks broken.
+> Worth saying out loud — students hit exactly this in their own projects.
+
 The **Who answered** panel makes it countable: one bar per pod, with each pod's share of
 your requests. Click **Send 10 requests** and the bars fill out in a couple of seconds.
 

@@ -77,3 +77,7 @@ Ask the room: "we are going live tonight, 50,000 users. What breaks?"
 - The DB password is sitting in a YAML file in git.
 
 Every one of those is a bullet on the Kubernetes feature list. That is the bridge.
+
+---
+
+← [Back: Your first image and container](../02-docker-single/)  ·  **[Next: Same app, now on Kubernetes →](../04-k8s-first-deploy/)**  ·  Stuck? The [cheat sheet](../../CHEATSHEET.md) has a *When it breaks* table.

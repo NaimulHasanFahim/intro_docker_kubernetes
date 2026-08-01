@@ -168,3 +168,7 @@ observability. Name them so students know the map is bigger than the tour.
 **And the honest production note:** you usually should *not* run your database in
 Kubernetes on day one. Use a managed Postgres (RDS, Cloud SQL, Neon). We ran it in the
 cluster today because it teaches PVCs and Secrets in one demo.
+
+---
+
+← [Back: Same app, now on Kubernetes](../04-k8s-first-deploy/)  ·  Stuck? The [cheat sheet](../../CHEATSHEET.md) has a *When it breaks* table.

@@ -71,3 +71,7 @@ laptop is Ubuntu. That is the demo that lands. Same kernel, different userland.
 | Registry | Where images live (Docker Hub, GHCR). |
 
 Next: the app needs a database, so we need a second container.
+
+---
+
+← [Back: Run it the old way](../01-plain-node/)  ·  **[Next: Two containers that talk →](../03-compose-db/)**  ·  Stuck? The [cheat sheet](../../CHEATSHEET.md) has a *When it breaks* table.

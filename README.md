@@ -3,6 +3,10 @@
 Slides, a demo app and five checkpoints for teaching Docker + Kubernetes to students
 who can code but have never touched ops.
 
+**This file is for whoever runs the session.** If you are attending and want to work
+through it yourself, start at [`checkpoints/01-plain-node/`](checkpoints/01-plain-node/)
+and follow the trail — each one ends with a link to the next.
+
 ```
 intro_docker_kubernetes/
 ├── CHEATSHEET.md              ← one-page handout for attendees

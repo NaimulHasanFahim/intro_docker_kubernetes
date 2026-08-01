@@ -30,6 +30,12 @@ sudo apt-get install -y postgresql
 sudo -u postgres psql -c "CREATE USER nsu WITH PASSWORD 'nsu_password';"
 sudo -u postgres psql -c "CREATE DATABASE nsu_demo OWNER nsu;"
 
+#    macOS:    brew install postgresql@16 && brew services start postgresql@16
+#    Windows:  download the installer from postgresql.org, click through it,
+#              then create the user and database in pgAdmin
+#    ...and this is exactly the point. Three operating systems, three sets of
+#    instructions, and none of them are your application.
+
 # 4. Tell the app where the database is
 export CHECKPOINT=1          # just labels the navbar
 export DB_HOST=localhost
@@ -73,3 +79,7 @@ Eight ways to fail, and that is for a 100-line app. A real one has fifty.
 
 > If Postgres install is slow on the workshop wifi, do not fight it. Say
 > "this is the point" and move on to Checkpoint 2 — the failure *is* the lesson.
+
+---
+
+**[Next: Your first image and container →](../02-docker-single/)**  ·  Stuck? The [cheat sheet](../../CHEATSHEET.md) has a *When it breaks* table.

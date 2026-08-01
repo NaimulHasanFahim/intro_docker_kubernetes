@@ -95,3 +95,7 @@ the Events section at the bottom of `kubectl describe pod`.
 | named volume | PersistentVolumeClaim |
 | `environment:` | env / ConfigMap / Secret |
 | — | replicas, self-healing, rolling updates |
+
+---
+
+← [Back: Two containers that talk](../03-compose-db/)  ·  **[Next: Scale, heal, update →](../05-k8s-scale-update/)**  ·  Stuck? The [cheat sheet](../../CHEATSHEET.md) has a *When it breaks* table.

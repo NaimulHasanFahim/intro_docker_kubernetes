@@ -16,6 +16,9 @@ docker run -d --name api --network nsu-net -p 8080:3000 \
   nsu-guestbook:v1
 ```
 
+(`-d` = run in the background, `--network` = put both on the same private network so
+they can find each other, `-e` = set an environment variable inside the container.)
+
 Six lines you must retype in the right order, every time, forever. Nobody does this.
 
 ## The real way
@@ -26,12 +29,18 @@ cd checkpoints/03-compose-db
 docker compose up --build
 ```
 
-Open <http://localhost:8080>, sign the guestbook a few times.
+One command reads `docker-compose.yml`, builds the app image, starts Postgres, waits
+until it is healthy, then starts the app — the six lines above, written down once.
+
+Open <http://localhost:8080> and sign the guestbook a few times. **This page was answered
+by** now shows a container ID instead of your laptop's name, and the settings panel shows
+the values Compose passed in. Only one container is answering, so **Who answered** has a
+single bar — that is what changes in Checkpoint 5.
 
 ```bash
 docker compose ps        # both services
-docker compose logs -f api
-docker compose down      # stop and delete containers
+docker compose logs -f api   # -f = follow, keep printing new lines
+docker compose down      # stop and delete both containers
 ```
 
 ## The volume lesson — do this live, it is the best 60 seconds of the Docker half

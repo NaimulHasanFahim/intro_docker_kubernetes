@@ -1,19 +1,27 @@
 const express = require("express");
 const os = require("os");
+const path = require("path");
 const { Pool } = require("pg");
 
 const PORT = Number(process.env.PORT || 3000);
 const VERSION = process.env.APP_VERSION || "v1";
+const STARTED_AT = Date.now();
+
+// Flipped from the "Break this pod" panel in the UI. When true /healthz answers 500,
+// which is exactly what a failing liveness/readiness probe looks like to Kubernetes.
+let failHealth = false;
 
 // Every one of these is a knob that changes per environment.
 // Remember this list -- it is the whole reason ConfigMaps and Secrets exist.
-const pool = new Pool({
+const DB = {
   host: process.env.DB_HOST || "localhost",
   port: Number(process.env.DB_PORT || 5432),
   user: process.env.DB_USER || "nsu",
   password: process.env.DB_PASSWORD || "nsu_password",
   database: process.env.DB_NAME || "nsu_demo",
-});
+};
+
+const pool = new Pool(DB);
 
 async function initDb() {
   // Postgres is almost never ready the instant our app starts.
@@ -42,8 +50,17 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// The whole UI is three static files. No build step, no CDN -- a lecture hall
+// never has the wifi you were promised.
+app.use(express.static(path.join(__dirname, "public")));
+
 // Liveness/readiness target. Kubernetes will call this constantly.
 app.get("/healthz", async (_req, res) => {
+  if (failHealth) {
+    return res
+      .status(500)
+      .json({ status: "failing on purpose", pod: os.hostname(), version: VERSION });
+  }
   try {
     await pool.query("SELECT 1");
     res.status(200).json({ status: "ok", pod: os.hostname(), version: VERSION });
@@ -52,54 +69,90 @@ app.get("/healthz", async (_req, res) => {
   }
 });
 
+// One call powers the whole dashboard: who served you, which version, is the DB up,
+// and what config this replica was handed.
+app.get("/api/status", async (_req, res) => {
+  const startedQuery = Date.now();
+  let db = { ok: false, latencyMs: null, error: null };
+  let totalVisits = null;
+
+  try {
+    const { rows } = await pool.query("SELECT COUNT(*)::int AS count FROM visits");
+    totalVisits = rows[0].count;
+    db = { ok: true, latencyMs: Date.now() - startedQuery, error: null };
+  } catch (err) {
+    db = { ok: false, latencyMs: null, error: err.message };
+  }
+
+  res.json({
+    pod: os.hostname(),
+    version: VERSION,
+    healthy: !failHealth,
+    uptimeSeconds: Math.round((Date.now() - STARTED_AT) / 1000),
+    servedAt: new Date().toISOString(),
+    db,
+    totalVisits,
+    config: {
+      APP_VERSION: VERSION,
+      PORT: String(PORT),
+      DB_HOST: DB.host,
+      DB_PORT: String(DB.port),
+      DB_USER: DB.user,
+      DB_NAME: DB.database,
+      DB_PASSWORD: "••••••••",
+    },
+  });
+});
+
+// Deliberately insecure, and that is the lesson. A Secret is base64, not encryption,
+// and any code running in the pod can simply read it -- so can anyone with `kubectl exec`.
+app.get("/api/config/secret", (_req, res) => {
+  res.json({ DB_PASSWORD: DB.password });
+});
+
 app.get("/api/visits", async (_req, res) => {
   const { rows } = await pool.query(
-    "SELECT name, served_by, created_at FROM visits ORDER BY id DESC LIMIT 10"
+    "SELECT id, name, served_by, created_at FROM visits ORDER BY id DESC LIMIT 10"
   );
   res.json(rows);
 });
 
 app.post("/api/visits", async (req, res) => {
   const name = (req.body.name || "anonymous").toString().slice(0, 60);
-  await pool.query("INSERT INTO visits (name, served_by) VALUES ($1, $2)", [
-    name,
-    os.hostname(),
-  ]);
-  res.redirect("/");
+  const { rows } = await pool.query(
+    "INSERT INTO visits (name, served_by) VALUES ($1, $2) RETURNING id, name, served_by, created_at",
+    [name, os.hostname()]
+  );
+
+  // The UI posts JSON and stays on the page. A plain <form> submit (the no-JavaScript
+  // fallback, and `curl -d name=...`) still gets the old redirect-home behaviour.
+  if (!req.is("application/json")) return res.redirect("/");
+  res.status(201).json(rows[0]);
 });
 
-app.get("/", async (_req, res) => {
-  const { rows } = await pool.query(
-    "SELECT name, served_by, created_at FROM visits ORDER BY id DESC LIMIT 10"
-  );
-  const { rows: countRows } = await pool.query("SELECT COUNT(*) FROM visits");
+// Reset between runs so the guestbook starts empty in front of the room.
+app.delete("/api/visits", async (_req, res) => {
+  await pool.query("DELETE FROM visits");
+  res.json({ cleared: true, pod: os.hostname() });
+});
 
-  res.send(`<!doctype html>
-<meta charset="utf-8">
-<title>NSU Container Demo</title>
-<style>
-  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 3rem auto; padding: 0 1rem; }
-  .host { font-size: 2rem; font-weight: 700; }
-  .badge { display:inline-block; background:#111; color:#fff; border-radius:999px; padding:.15rem .7rem; font-size:.8rem; }
-  li { margin:.3rem 0; }
-  input, button { font-size:1rem; padding:.5rem; }
-</style>
-<p class="badge">${VERSION}</p>
-<p class="host">Served by ${os.hostname()}</p>
-<p>${countRows[0].count} total visits recorded in Postgres.</p>
-<form method="POST" action="/api/visits">
-  <input name="name" placeholder="your name" required>
-  <button type="submit">Sign the guestbook</button>
-</form>
-<h3>Last 10 visits</h3>
-<ul>
-${rows
-  .map(
-    (r) =>
-      `<li><b>${r.name}</b> &mdash; served by <code>${r.served_by}</code></li>`
-  )
-  .join("\n")}
-</ul>`);
+// --- Chaos, on purpose -------------------------------------------------------
+// Two buttons that let you break this replica live and watch the platform react.
+
+// Make the probes fail without killing the process: readiness pulls this pod out of
+// the Service, then liveness restarts it. Docker will not notice at all.
+app.post("/api/chaos/health", (req, res) => {
+  failHealth = Boolean(req.body.fail);
+  console.log(`[chaos] health checks now ${failHealth ? "FAILING" : "passing"}`);
+  res.json({ healthy: !failHealth, pod: os.hostname() });
+});
+
+// Kill the process outright. Under Kubernetes a replacement pod appears in seconds;
+// under `docker run` the container is simply gone until you restart it.
+app.post("/api/chaos/crash", (_req, res) => {
+  console.log("[chaos] crashing on request");
+  res.json({ crashing: true, pod: os.hostname() });
+  setTimeout(() => process.exit(1), 100);
 });
 
 initDb()

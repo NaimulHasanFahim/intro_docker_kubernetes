@@ -11,6 +11,9 @@ cd checkpoints/02-docker-single
 docker build -t nsu-guestbook:v1 .
 ```
 
+`-t` names the image `nsu-guestbook` and tags it `v1`; the `.` is the folder Docker
+reads the `Dockerfile` and source from.
+
 Run it a second time — the whole thing is cached, near-instant. Now edit one
 character in `server.js` and rebuild: only the last layers rerun. That is the
 `COPY package.json` trick from the Dockerfile paying off.
@@ -26,7 +29,9 @@ docker history nsu-guestbook:v1 # the layers, largest first
 docker run --rm -p 8080:3000 nsu-guestbook:v1
 ```
 
-Watch the logs: `[db] not ready (attempt 1/20)`. **Ask the room why.**
+Watch the logs (the text the app prints as it runs): `[db] not ready (attempt 1/20)`.
+The page will not open at all — the app refuses to start until it can reach a database.
+**Ask the room why.**
 
 Answer: the container has its own network namespace. `localhost` inside the
 container means *the container itself*, not your laptop. There is no Postgres in

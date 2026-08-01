@@ -26,6 +26,21 @@ your code ──Dockerfile──► image ──registry──► container(s)
 
 ---
 
+## The demo app (<http://localhost:8080>)
+
+| Panel | Watch it when |
+|---|---|
+| **This page was answered by** | Always. Container ID under Docker, pod name under Kubernetes. |
+| **Who answered** | You scale — one bar per copy, with its share of your requests. |
+| **Request log** | You do a rolling update — v1 and v2 interleave, then only v2. |
+| **Guestbook** | You delete containers — the data is in Postgres, so it survives. |
+| **Settings this copy was given** | You want to see what a ConfigMap and Secret actually become: env vars. |
+| **Break this copy** | You want probes and self-healing to happen on a button. |
+
+`Live` in the top bar re-checks every 1.5s so all of the above updates by itself.
+
+---
+
 ## Docker
 
 ```bash

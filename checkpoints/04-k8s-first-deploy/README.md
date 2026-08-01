@@ -6,6 +6,15 @@ objects that got it there: Namespace, Deployment, Pod, Service.
 > **Instructor prep:** create the cluster and load the image BEFORE the session.
 > `kind create cluster` takes 1–3 minutes on good wifi and much longer on bad wifi.
 
+**Four words you need before the commands make sense:**
+
+| Word | Meaning |
+|---|---|
+| **Cluster** | A group of machines Kubernetes manages as if they were one big computer. |
+| **Node** | One machine in that group. With `kind`, each "machine" is really a container on your laptop. |
+| **kind** | *Kubernetes IN Docker* — a throwaway practice cluster, no cloud account needed. |
+| **Namespace** | A folder inside the cluster that keeps our objects away from everything else. Ours is `nsu-demo`, which is why every command below ends in `-n nsu-demo`. |
+
 ## 1. Cluster up (pre-session)
 
 ```bash
@@ -40,7 +49,9 @@ kubectl get all -n nsu-demo
 kubectl get pods -n nsu-demo -w      # watch them go Pending -> ContainerCreating -> Running
 ```
 
-Open <http://localhost:8080>. Same app, same image, new world.
+Open <http://localhost:8080>. Same app, same image, new world — except the big name at
+the top is now a pod name like `api-7d9c8f5b6-x2klm` instead of a container ID. Compare it with
+`kubectl get pods -n nsu-demo`: that is the exact pod that answered your request.
 
 ## 4. Read the room's mind: "what did I just do?"
 

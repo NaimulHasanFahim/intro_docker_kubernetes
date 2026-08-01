@@ -5,9 +5,13 @@ have spent ten minutes installing a database.
 
 ## What the app is
 
-A guestbook. `POST /api/visits` writes your name to Postgres, the home page shows who
-served the request (`os.hostname()`) and the last 10 names. That hostname field is the
-single most useful thing in this repo — later it proves load balancing across pods.
+A guestbook with a dashboard. You type a name, it is saved in a Postgres database, and
+the page shows the last 10 names plus **which machine answered your request**
+(`os.hostname()` in Node — the computer's name).
+
+Right now that name will just be your laptop. That one field is the most useful thing
+in this repo: in Checkpoint 2 it becomes a container ID, and in Checkpoint 5 it changes
+every time you refresh, which is how we will *see* load balancing without a diagram.
 
 ## Steps
 
@@ -37,7 +41,18 @@ export DB_NAME=nsu_demo
 npm start
 ```
 
-Open <http://localhost:3000>.
+Open <http://localhost:3000>. (`localhost` = this computer. `3000` = the port the app
+is listening on.)
+
+## What you should see
+
+A page that says **This page was answered by** followed by your laptop's name, an empty
+guestbook, and the settings you exported in step 4. Sign it once, then stop the app with
+`Ctrl-C` and start it again — the name is still there, because it lives in Postgres, not
+in the app.
+
+Keep that page in mind. It is the same app for the rest of the session; only what runs
+it keeps changing.
 
 ## Debrief — write these on the whiteboard
 
